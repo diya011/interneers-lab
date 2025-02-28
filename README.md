@@ -293,13 +293,13 @@ Confirm that all meet any minimum version requirements.
 
 ##### Creating and Testing a Simple "Hello, {name}" API (via Query Parameters)
 
-This section explains how to create a Django endpoint that reads a `name` parameter from the **query string** (e.g., `/?name=Bob`).
+This section explains how to create a Django endpoint that reads a `name` and `city` parameters from the **query string** (e.g., `/?name=Bob&city=Delhi`).
 
 ---
 
 #### 1. Define the View Function
 
-Open your Django project’s `urls.py` (or `views.py`, depending on your structure). Below, we’ll define a function that looks for a `name` query parameter in `request.GET`:
+Open your Django project’s `urls.py`. Below, we’ll define a function that looks for a `name` query parameter in `request.GET`:
 
 ```python
 # django_app/urls.py
@@ -307,21 +307,25 @@ Open your Django project’s `urls.py` (or `views.py`, depending on your structu
 from django.contrib import admin
 from django.urls import path
 from django.http import JsonResponse
+from django.views.decorators.cache import never_cache    # Added to prevent Django from serving cached responses, ensuring real-time updates to the API output.
 
+@never_cache
 def hello_name(request):
     """
-    A simple view that returns 'Hello, {name}' in JSON format.
-    Uses a query parameter named 'name'.
+    A simple view that returns 'Hey! I'm {name} from {city}' in JSON format.
+    Uses query parameters 'name' and 'city'.
     """
     # Get 'name' from the query string, default to 'World' if missing
-    name = request.GET.get("name", "World")
-    return JsonResponse({"message": f"Hello, {name}!"})
+    name = request.GET.get("name", "dark")
+    city = request.GET.get("city", "Peter Pan")
+    return JsonResponse({"message": f"Hey! I'm {name} from {city} :)"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', hello_name), 
-    # Example usage: /hello/?name=Bob
-    # returns {"message": "Hello, Bob!"}
+    # Example usage: /hello/?name=Alice&city=Paris
+    # returns {"message": "Hey! I'm Alice from Paris :)"}
+    # If parameters are missing, it returns "Hey! I'm dark from Peter Pan :)"
 ]
 
 ```
@@ -358,13 +362,13 @@ Create a new GET request.
 
 Enter the endpoint, for example:
 ```
-http://127.0.0.1:8001/hello/?name=Bob
+http://127.0.0.1:8001/hello/?name=Bob&city=Delhi
 ```
 
 Send the request. You should see a JSON response:
 ```
 {
-  "message": "Hello, Bob!"
+  "message": "Hey! I'm Bob from Delhi :)"
 }
 ```
 
@@ -377,7 +381,7 @@ Send the request. You should see a JSON response:
 1. **Stage and commit**:
    ```bash
    git add .
-   git commit -m "Your descriptive commit message"
+   git commit -m "first commit : GET API testing"
 2. **Push to your forked repo (main branch by default):**
     ```
     git push origin main
