@@ -20,28 +20,3 @@ urlpatterns = [
     # Example usage: /hello/?name=Bob
     # returns {"message": "Hello, Bob!"}
 ]
-
-
-
-
-
-# from django.contrib import admin
-# from django.urls import path
-# from django.http import JsonResponse
-
-# def hello_name(request):
-#     """
-#     A simple view that returns 'Hey I'm {name} from {city}' in JSON format.
-#     Uses a query parameter named 'name' and 'city'.
-#     """
-#     # Get 'name' from the query string, default to 'World' if missing
-#     name = request.GET.get("name", "untold")
-#     city = request.GET.get("city", "secret")
-#     return JsonResponse({"message": f"Hey! I'm {name} from {city}:)"})
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('hello/', hello_name),
-#     # Example usage: /hello/?name=Bob
-#     # returns {"message": "Hello, Bob!"}
-# ]
