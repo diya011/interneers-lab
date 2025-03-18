@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django_app',
+    "rest_framework",
+    "product",
 ]
 
 MIDDLEWARE = [
@@ -73,6 +75,13 @@ WSGI_APPLICATION = "django_app.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+from mongoengine import connect
+
+connect(
+    db="productDB",
+    host="mongodb://localhost:27017/productDB"
+)
 
 DATABASES = {
     "default": {
