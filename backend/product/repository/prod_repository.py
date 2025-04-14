@@ -1,4 +1,6 @@
-from .models import Product
+from bson import ObjectId
+from product.repository.prod_category_repository import ProductCategoryRepository
+from product.models.prod_model import Product
 
 class ProductRepository:
     @staticmethod
@@ -30,3 +32,25 @@ class ProductRepository:
             product.delete()
             return True                                             
         return False
+    
+    @staticmethod
+    def get_by_category(category_id):
+        return Product.objects(category_id=category_id)
+    
+    @staticmethod
+    def set_category(product_id, category_obj):
+        product = Product.objects(id=ObjectId(product_id)).first()
+        if product:
+            product.category_id = category_obj
+            product.save()
+            return product
+        return None
+
+    @staticmethod
+    def remove_category(product_id):
+        product = Product.objects(id=ObjectId(product_id)).first()
+        if product:
+            product.category_id = None
+            product.save()
+            return product
+        return None

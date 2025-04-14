@@ -1,4 +1,4 @@
-from .repository import ProductRepository
+from product.repository.prod_repository import ProductRepository
 
 class ProductService:
     @staticmethod
@@ -20,3 +20,15 @@ class ProductService:
     @staticmethod
     def delete_product(product_id):
         return ProductRepository.delete_product(product_id)
+    
+    @staticmethod
+    def get_products_by_category(category_id):
+        return ProductRepository.get_by_category(category_id)
+    
+    @staticmethod
+    def add_product_to_category(product_id , category_id):
+        return ProductRepository.set_category(product_id , category_id)
+    
+    @staticmethod
+    def remove_product_from_category(product_id , category_id):
+        return ProductRepository.remove_category(product_id , category_id)
