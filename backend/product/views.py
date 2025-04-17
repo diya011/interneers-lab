@@ -11,12 +11,36 @@ from product.service.prod_service import ProductService
 from product.models.prod_model import Product
 from product.models.prod_category_model import ProductCategory
 
+def validate_product_data(data):
+    required_fields = ["name", "price", "brand", "quantity"]
+    for field in required_fields:
+        if field not in data:
+            return f"{field} is required"
+
+    if not isinstance(data["price"], (int, float)) or data["price"] < 0:
+        return "Price must be a non-negative number"
+
+    if not isinstance(data["quantity"], int) or data["quantity"] < 0:
+        return "Quantity must be a non-negative integer"
+
+    return None
+
+
+def validate_category_data(data):
+    if "title" not in data or not data["title"].strip():
+        return "Title is required"
+    return None
+
+
 @csrf_exempt
 #creating a new category
 def create_category(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            validation_error = validate_category_data(data)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
             category = ProductCategoryService.create_category(data)
             return JsonResponse({"message": "Category created", "id": str(category.id)}, status=201)
         except Exception as e:
@@ -51,6 +75,10 @@ def update_category(request, category_id):
     if request.method == "PUT":
         try:
             data = json.loads(request.body)
+            validation_error = validate_category_data(data)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
             updated_category = ProductCategoryService.update_category(category_id, data)
             if updated_category:
                 return JsonResponse({"message": "Category updated"})
@@ -78,9 +106,10 @@ def create_product(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            if not data.get("brand"):
-                return JsonResponse({"error": "Brand is required"}, status=400)
-            product = ProductService.create_product(data)
+            validation_error = validate_product_data(data)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
             return JsonResponse({"message": "Product created", "id": str(product.id)}, status=201)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
@@ -113,6 +142,10 @@ def update_product(request, product_id):
     if request.method == "PUT":
         try:
             data = json.loads(request.body)
+            validation_error = validate_product_data(data)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
             updated_product = ProductService.update_product(ObjectId(product_id), data)
             if updated_product:
                 return JsonResponse({"message": "Product updated"})
@@ -147,17 +180,15 @@ def get_products_by_category(request, category_id):
 def add_product_to_category(request, product_id, category_id):
     if request.method == "PUT":
         try:
-            product = Product.objects(id=product_id).first()
             category = ProductCategory.objects(id=category_id).first()
-
-            if not product:
-                return JsonResponse({"error": "Product not found"}, status=404)
             if not category:
                 return JsonResponse({"error": "Category not found"}, status=404)
 
-            product.category_id = category
-            product.save()
-            return JsonResponse({"message": "Product added to category successfully"})
+            result = ProductService.add_product_to_category(product_id, category)
+
+            if result:
+                return JsonResponse({"message": "Product added to category successfully"})
+            return JsonResponse({"error": "Product not found"}, status=404)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
 
@@ -165,14 +196,9 @@ def add_product_to_category(request, product_id, category_id):
 def remove_product_from_category(request, product_id):
     if request.method == "PUT":
         try:
-            product = Product.objects(id=product_id).first()
-
-            if not product:
-                return JsonResponse({"error": "Product not found"}, status=404)
-
-            product.category_id = None
-            product.save()
-            return JsonResponse({"message": "Product removed from category successfully"})
+            result = ProductService.remove_product_from_category(product_id, None)
+            if result:
+                return JsonResponse({"message": "Product removed from category successfully"})
+            return JsonResponse({"error": "Product not found"}, status=404)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
-

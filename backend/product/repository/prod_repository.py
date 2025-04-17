@@ -19,11 +19,19 @@ class ProductRepository:
 
     @staticmethod
     def update_product(product_id, data):
-        product = Product.objects(id=product_id).first()
-        if product:
-            product.update(**data)
-            return Product.objects(id=product_id).first()  # to fetch updated prod
-        return None
+        if 'category_id' in data:
+            try:
+                category = ProductCategory.objects(id=ObjectId(data['category_id'])).first()
+                if not category:
+                    return None, 'Invalid category_id'
+                data['category_id'] = category 
+            except:
+                return None, 'Invalid category_id format'
+
+        updated_product = ProductRepository.update_product(product_id, data)
+        if updated_product:
+            return updated_product, None
+        return None, 'Product not found'
 
     @staticmethod
     def delete_product(product_id):
@@ -52,5 +60,5 @@ class ProductRepository:
         if product:
             product.category_id = None
             product.save()
-            return product
+            return product 
         return None
