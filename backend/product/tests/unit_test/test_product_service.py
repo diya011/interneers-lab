@@ -1,8 +1,6 @@
 import unittest
 from unittest.mock import patch
 from product.service.prod_service import ProductService
-from product.service.prod_category_service import ProductCategoryService
-
 
 class TestProductService(unittest.TestCase):
 
@@ -59,6 +57,6 @@ class TestProductService(unittest.TestCase):
     @patch('product.service.prod_service.ProductRepository.remove_category')
     def test_remove_product_from_category(self, mock_remove_cat):
         mock_remove_cat.return_value = True
-        result = ProductService.remove_product_from_category('p1', 'c1')
+        result = ProductService.remove_product_from_category('p1')
         self.assertTrue(result)
-        mock_remove_cat.assert_called_once_with('p1', 'c1')
+        mock_remove_cat.assert_called_once_with('p1')

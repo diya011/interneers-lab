@@ -30,5 +30,5 @@ class ProductService:
         return ProductRepository.set_category(product_id , category_id)
     
     @staticmethod
-    def remove_product_from_category(product_id , category_id):
-        return ProductRepository.remove_category(product_id , category_id)
+    def remove_product_from_category(product_id):
+        return ProductRepository.remove_category(product_id)

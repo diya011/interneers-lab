@@ -110,9 +110,12 @@ def create_product(request):
             if validation_error:
                 return JsonResponse({"error": validation_error}, status=400)
 
+            # Call the service to create the product
+            product = ProductService.create_product(data)
             return JsonResponse({"message": "Product created", "id": str(product.id)}, status=201)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
+
 
 #to get a product by id
 @csrf_exempt
@@ -145,7 +148,7 @@ def update_product(request, product_id):
             validation_error = validate_product_data(data)
             if validation_error:
                 return JsonResponse({"error": validation_error}, status=400)
-
+            
             updated_product = ProductService.update_product(ObjectId(product_id), data)
             if updated_product:
                 return JsonResponse({"message": "Product updated"})
@@ -196,7 +199,7 @@ def add_product_to_category(request, product_id, category_id):
 def remove_product_from_category(request, product_id):
     if request.method == "PUT":
         try:
-            result = ProductService.remove_product_from_category(product_id, None)
+            result = ProductService.remove_product_from_category(product_id)
             if result:
                 return JsonResponse({"message": "Product removed from category successfully"})
             return JsonResponse({"error": "Product not found"}, status=404)
