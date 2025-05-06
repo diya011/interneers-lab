@@ -21,7 +21,7 @@ class ProductRepository:
     def update_product(product_id, data):
         if 'category_id' in data:
             try:
-                category = ProductCategory.objects(id=ObjectId(data['category_id'])).first()
+                category = ProductCategoryRepository.objects(id=ObjectId(data['category_id'])).first()
                 if not category:
                     return None, 'Invalid category_id'
                 data['category_id'] = category 
@@ -60,5 +60,5 @@ class ProductRepository:
         if product:
             product.category_id = None
             product.save()
-            return product 
+            return product
         return None

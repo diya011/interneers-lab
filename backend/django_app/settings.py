@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django_app',
     "rest_framework",
     "product",
+    # "pytest",
+    # "pytest-django",
 ]
 
 MIDDLEWARE = [
@@ -76,12 +78,20 @@ WSGI_APPLICATION = "django_app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-from mongoengine import connect
+# from mongoengine import connect
 
-connect(
-    db="productDB",
-    host="mongodb://localhost:27017/productDB"
-)
+# connect(
+#     db="productDB",
+#     host="mongodb://localhost:27017/productDB"
+# )
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 
 DATABASES = {
     "default": {
@@ -89,6 +99,18 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+import os
+from mongoengine import connect
+
+# testing database setup
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
+
+MONGO_NAME = 'productDB_test' if os.getenv("ENV") == "test" else 'productDB_test'
+MONGO_URI = f'mongodb://{MONGO_HOST}:{MONGO_PORT}/{MONGO_NAME}'
+
+connect(MONGO_NAME, host=MONGO_URI, alias="default")
 
 
 # Password validation
